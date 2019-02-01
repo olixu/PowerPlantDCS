@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1610</width>
+    <height>936</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="whatsThis">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>20</y>
+     <width>1561</width>
+     <height>921</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>25</pointsize>
+    </font>
+   </property>
+   <property name="title">
+    <string>火电数据处理系统</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>-10</x>
+      <y>50</y>
+      <width>1571</width>
+      <height>871</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="DataMiningTab">
+     <attribute name="title">
+      <string>数据预处理</string>
+     </attribute>
+     <widget class="QPushButton" name="InputBtn">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string>导入数据</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="DataMiningBtn">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>20</y>
+        <width>181</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string>数据预处理</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="DataMiningLabel">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>20</y>
+        <width>731</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>1531</width>
+        <height>721</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QTableWidget" name="DataMiningTableWidget">
+         <property name="styleSheet">
+          <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="DataVisualTab">
+     <attribute name="title">
+      <string>数据可视化</string>
+     </attribute>
+     <widget class="QWebEngineView" name="DataVisualWebEngine" native="true">
+      <property name="geometry">
+       <rect>
+        <x>19</x>
+        <y>79</y>
+        <width>1531</width>
+        <height>731</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="DataVisualBtn">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>30</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string>画图</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="OxygenTab">
+     <attribute name="title">
+      <string>烟气含氧量软测量</string>
+     </attribute>
+     <widget class="QWebEngineView" name="OxygenWebEngine" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>1531</width>
+        <height>731</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="OxygenVisualBtn">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>30</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string>画图</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="EfficiencyTab">
+     <attribute name="title">
+      <string>效率软测量</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="EfficiencyImproveTab">
+     <attribute name="title">
+      <string>效率优化</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="LogTab">
+     <attribute name="title">
+      <string>系统日志</string>
+     </attribute>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>19</x>
+        <y>19</y>
+        <width>1201</width>
+        <height>781</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1197</width>
+            <height>777</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>777</height>
+           </size>
+          </property>
+          <widget class="QTextEdit" name="LogTextEdit">
+           <property name="geometry">
+            <rect>
+             <x>-7</x>
+             <y>-1</y>
+             <width>1211</width>
+             <height>781</height>
+            </rect>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>777</height>
+            </size>
+           </property>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">PyQt5.QtWebEngineWidgets</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>InputBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>OpenFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>12</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DataMiningBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>Calculate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>317</x>
+     <y>10</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DataVisualBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>DataVisualPlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>102</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>139</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OxygenVisualBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>OxygenVisualPlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>133</x>
+     <y>-3</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>OpenFile()</slot>
+  <slot>Calculate()</slot>
+  <slot>DataVisualPlot()</slot>
+  <slot>OxygenVisualPlot()</slot>
+ </slots>
+</ui>
