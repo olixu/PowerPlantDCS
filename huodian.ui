@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>火电关键参数软测量及效率优化系统</string>
   </property>
   <property name="whatsThis">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -31,7 +31,7 @@
     </font>
    </property>
    <property name="title">
-    <string>火电数据处理系统</string>
+    <string/>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -46,7 +46,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="DataMiningTab">
      <attribute name="title">
@@ -133,7 +133,7 @@
      <attribute name="title">
       <string>数据可视化</string>
      </attribute>
-     <widget class="QWebEngineView" name="DataVisualWebEngine" native="true">
+     <widget class="MatplotlibWidget" name="DataVisualWidget" native="true">
       <property name="geometry">
        <rect>
         <x>19</x>
@@ -164,7 +164,7 @@
      <attribute name="title">
       <string>烟气含氧量软测量</string>
      </attribute>
-     <widget class="QWebEngineView" name="OxygenWebEngine" native="true">
+     <widget class="MatplotlibWidget" name="OxygenVisualWidget" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -224,8 +224,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>1197</width>
+            <y>-4</y>
+            <width>1193</width>
             <height>777</height>
            </rect>
           </property>
@@ -262,10 +262,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QWebEngineView</class>
+   <class>MatplotlibWidget</class>
    <extends>QWidget</extends>
-   <header location="global">PyQt5.QtWebEngineWidgets</header>
+   <header location="global">MatplotlibWidget</header>
    <container>1</container>
+   <slots>
+    <slot>DataVisualPlot()</slot>
+    <slot>OxygenVisualPlot()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -277,8 +281,8 @@
    <slot>OpenFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>155</y>
+     <x>95</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>174</x>
@@ -293,8 +297,8 @@
    <slot>Calculate()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>264</x>
-     <y>150</y>
+     <x>267</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>317</x>
@@ -305,32 +309,32 @@
   <connection>
    <sender>DataVisualBtn</sender>
    <signal>clicked()</signal>
-   <receiver>Form</receiver>
+   <receiver>DataVisualWidget</receiver>
    <slot>DataVisualPlot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>151</y>
+     <x>107</x>
+     <y>185</y>
     </hint>
     <hint type="destinationlabel">
-     <x>139</x>
-     <y>1</y>
+     <x>104</x>
+     <y>227</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>OxygenVisualBtn</sender>
    <signal>clicked()</signal>
-   <receiver>Form</receiver>
+   <receiver>OxygenVisualWidget</receiver>
    <slot>OxygenVisualPlot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>153</y>
+     <x>108</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
-     <x>133</x>
-     <y>-3</y>
+     <x>105</x>
+     <y>269</y>
     </hint>
    </hints>
   </connection>

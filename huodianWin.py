@@ -17,6 +17,7 @@ class Ui_Form(object):
         font = QtGui.QFont()
         font.setPointSize(25)
         self.groupBox.setFont(font)
+        self.groupBox.setTitle("")
         self.groupBox.setAlignment(QtCore.Qt.AlignCenter)
         self.groupBox.setObjectName("groupBox")
         self.tabWidget = QtWidgets.QTabWidget(self.groupBox)
@@ -55,9 +56,9 @@ class Ui_Form(object):
         self.tabWidget.addTab(self.DataMiningTab, "")
         self.DataVisualTab = QtWidgets.QWidget()
         self.DataVisualTab.setObjectName("DataVisualTab")
-        self.DataVisualWebEngine = QtWebEngineWidgets.QWebEngineView(self.DataVisualTab)
-        self.DataVisualWebEngine.setGeometry(QtCore.QRect(19, 79, 1531, 731))
-        self.DataVisualWebEngine.setObjectName("DataVisualWebEngine")
+        self.DataVisualWidget = MatplotlibWidget(self.DataVisualTab)
+        self.DataVisualWidget.setGeometry(QtCore.QRect(19, 79, 1531, 731))
+        self.DataVisualWidget.setObjectName("DataVisualWidget")
         self.DataVisualBtn = QtWidgets.QPushButton(self.DataVisualTab)
         self.DataVisualBtn.setGeometry(QtCore.QRect(50, 30, 111, 31))
         self.DataVisualBtn.setStyleSheet("font: 15pt \"Ubuntu\";")
@@ -65,9 +66,9 @@ class Ui_Form(object):
         self.tabWidget.addTab(self.DataVisualTab, "")
         self.OxygenTab = QtWidgets.QWidget()
         self.OxygenTab.setObjectName("OxygenTab")
-        self.OxygenWebEngine = QtWebEngineWidgets.QWebEngineView(self.OxygenTab)
-        self.OxygenWebEngine.setGeometry(QtCore.QRect(20, 70, 1531, 731))
-        self.OxygenWebEngine.setObjectName("OxygenWebEngine")
+        self.OxygenVisualWidget = MatplotlibWidget(self.OxygenTab)
+        self.OxygenVisualWidget.setGeometry(QtCore.QRect(20, 70, 1531, 731))
+        self.OxygenVisualWidget.setObjectName("OxygenVisualWidget")
         self.OxygenVisualBtn = QtWidgets.QPushButton(self.OxygenTab)
         self.OxygenVisualBtn.setGeometry(QtCore.QRect(50, 30, 111, 31))
         self.OxygenVisualBtn.setStyleSheet("font: 15pt \"Ubuntu\";")
@@ -91,7 +92,7 @@ class Ui_Form(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 1197, 777))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, -4, 1193, 777))
         self.scrollAreaWidgetContents_3.setMinimumSize(QtCore.QSize(0, 777))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.LogTextEdit = QtWidgets.QTextEdit(self.scrollAreaWidgetContents_3)
@@ -112,9 +113,8 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "火电关键参数软测量及效率优化系统"))
         Form.setWhatsThis(_translate("Form", "<html><head/><body><p><br/></p></body></html>"))
-        self.groupBox.setTitle(_translate("Form", "火电数据处理系统"))
         self.InputBtn.setText(_translate("Form", "导入数据"))
         self.DataMiningBtn.setText(_translate("Form", "数据预处理"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DataMiningTab), _translate("Form", "数据预处理"))
@@ -126,4 +126,4 @@ class Ui_Form(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.EfficiencyImproveTab), _translate("Form", "效率优化"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.LogTab), _translate("Form", "系统日志"))
 
-from PyQt5 import QtWebEngineWidgets
+from MatplotlibWidget import MatplotlibWidget
