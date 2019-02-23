@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
 
     # 数据预处理标签下的槽函数：数据预处理->Calculate()
     def Calculate(self):
-        ##plant_data.drop([1], inplace=True)
+        # plant_data.drop([1], inplace=True)
         raw_给煤量 = ['给煤机A给煤量', '给煤机B给煤量', '给煤机C给煤量',
                    '给煤机D给煤量', '给煤机E给煤量', '给煤机F给煤量']
         raw_主蒸汽压力 = ['主蒸汽压力']
@@ -90,12 +90,12 @@ class MainWindow(QMainWindow):
         raw_给水温度 = ['省煤器进口给水温度']
         raw_给水流量 = ['给水流量']
         raw_一次风量 = ['总一次风量']
-        #raw_一次风温 = ['']
+        # raw_一次风温 = ['']
         raw_二次风量 = ['A侧二次风量', 'B侧二次风量']
         raw_二次风温 = ['二次风温度']
         raw_含氧量 = ['省煤器A侧出口烟气氧量分析1', '省煤器 A侧出口烟气氧量分析2', '省煤器A侧出口烟气氧量分析3',
                    '省煤器B侧出口烟气氧量分析1', '省煤器B侧出口烟气氧量分析2', '省煤器B侧出口烟气氧量分析3']
-        #raw_含氧量 = ['省煤器A侧出口烟气氧量分析3']
+        # raw_含氧量 = ['省煤器A侧出口烟气氧量分析3']
         给煤量 = self.plant_data[raw_给煤量].sum(1)
         主蒸汽压力 = self.plant_data[raw_主蒸汽压力]
         炉膛出口烟温度 = self.plant_data[raw_炉膛出口烟温度]
@@ -115,6 +115,7 @@ class MainWindow(QMainWindow):
         # outcome['机组负荷'].describe()
         # outcome.dtypes
         outcome = outcome.apply(pd.to_numeric)
+        self.data_pre_handle = outcome
         ruanceliang_data = outcome.describe()
 
         self.ui.DataMiningTableWidget.setRowCount(self.df_rows)
@@ -131,26 +132,49 @@ class MainWindow(QMainWindow):
         self.ui.DataMiningTableWidget.resizeColumnsToContents()
         self.ui.DataMiningTableWidget.resizeRowsToContents()
 
-    # 数据可视化标签下的槽函数：开始画图->DataVisualPlot()
+    # 数据可视化标签下的槽函数：画图->DataVisualPlot(self, title, xlabel, ylabel, x, y)
     def DataVisualPlot(self):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
         self.ui.DataVisualWidget.setVisible(True)
-        self.ui.DataVisualWidget.mpl.start_static_plot()
+        self.ui.DataVisualWidget.mpl.start_plot(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText(),
+												self.ui.XComboBox.currentText(),
+												self.ui.YComboBox.currentText(),
+												self.data_pre_handle[self.ui.XComboBox.currentText()],
+												self.data_pre_handle[self.ui.YComboBox.currentText()]
+												)
         print("正在数据可视化画图")
         self.logger.info("画了一幅图片，参数是：")
+        print(self.ui.XComboBox.currentText())
+        print("输出结果完毕")
+        # print(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText())
+        # print(self.ui.XComboBox.currentText())
+        # print(self.ui.YComboBox.currentText())
+        # print(self.data_pre_handle[self.ui.XComboBox.currentText()].shape)
+        # print(self.data_pre_handle[self.ui.YComboBox.currentText()].shape)
+
+	# 数据可视化标签下的槽函数：Heatmap->HeapMapPlot()
+    def HeapMapPlot(self):
+        # DataVisulWebEngine
+        # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
+        self.ui.DataVisualWidget.setVisible(True)
+        self.ui.DataVisualWidget.mpl.start_plot()
+        print("正在数据可视化画图")
+        self.logger.info("画了一幅图片，参数是：")
+        print(self.ui.XComboBox.currentText())
+        print("输出结果完毕")
 
     # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()
     def OxygenVisualPlot(self):
         # self.ui.OxygenWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
         self.ui.OxygenVisualWidget.setVisible(True)
-        self.ui.OxygenVisualWidget.mpl.start_static_plot()
+        self.ui.OxygenVisualWidget.mpl.start_plot()
         print("正在烟气含氧量画图")
         self.logger.info("画了一幅图片，参数是：")
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    win = MainWindow()
+    app=QApplication(sys.argv)
+    win=MainWindow()
     win.show()
     sys.exit(app.exec_())

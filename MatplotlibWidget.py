@@ -37,13 +37,12 @@ class MyMplCanvas(FigureCanvas):
 
     '''绘制静态图，可以在这里定义自己的绘图逻辑'''
 
-    def start_static_plot(self):
+    def start_plot(self, title, xlabel, ylabel, x, y):
         self.axes.cla()
-        self.fig.suptitle('测试动态图')
-        l = [random.randint(0, 10) for i in range(4)]
-        self.axes.plot([0, 1, 2, 3], l, 'r')
-        self.axes.set_ylabel('动态图：Y轴')
-        self.axes.set_xlabel('动态图：X轴')
+        self.fig.suptitle(title)
+        self.axes.plot(x, y, 'r')
+        self.axes.set_ylabel('Y轴:' + ylabel)
+        self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
         self.draw()
 
@@ -56,7 +55,7 @@ class MatplotlibWidget(QWidget):
     def initUi(self):
         self.layout = QVBoxLayout(self)
         self.mpl = MyMplCanvas(self, width=5, height=4, dpi=100)
-        self.mpl.start_static_plot() # 如果你想要初始化的时候就呈现静态图，请把这行注释去掉
+        #self.mpl.start_plot() # 如果你想要初始化的时候就呈现静态图，请把这行注释去掉
         self.mpl_ntb = NavigationToolbar(self.mpl, self)  # 添加完整的 toolbar
 
         self.layout.addWidget(self.mpl)
@@ -67,7 +66,7 @@ class MatplotlibWidget(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = MatplotlibWidget()
-    ui.mpl.start_static_plot()  # 测试静态图效果
+    #ui.mpl.start_plot()  # 测试静态图效果
     # ui.mpl.start_dynamic_plot() # 测试动态图效果
     ui.show()
     sys.exit(app.exec_()) 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1610</width>
-    <height>936</height>
+    <height>914</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,28 +136,237 @@
      <widget class="MatplotlibWidget" name="DataVisualWidget" native="true">
       <property name="geometry">
        <rect>
-        <x>19</x>
-        <y>79</y>
-        <width>1531</width>
-        <height>731</height>
+        <x>400</x>
+        <y>90</y>
+        <width>1131</width>
+        <height>600</height>
        </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
      </widget>
-     <widget class="QPushButton" name="DataVisualBtn">
+     <widget class="QSplitter" name="DataVisualSplitter">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>30</y>
-        <width>111</width>
-        <height>31</height>
+        <x>40</x>
+        <y>90</y>
+        <width>321</width>
+        <height>601</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="text">
-       <string>画图</string>
-      </property>
+      <widget class="QSplitter" name="xsplitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QLabel" name="XLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>X轴：</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="XComboBox">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>给煤量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>主蒸汽压力</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>炉膛出口烟温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>主蒸汽温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>机组负荷</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>给水温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>给水流量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>一次风量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>二次风量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>二次风温</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>含氧量</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+      <widget class="QSplitter" name="ysplitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QLabel" name="YLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Y轴：</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="YComboBox">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>含氧量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>给煤量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>主蒸汽压力</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>炉膛出口烟温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>主蒸汽温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>机组负荷</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>给水温度</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>给水流量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>一次风量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>二次风量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>二次风温</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+      <widget class="QCheckBox" name="LogCheckBox">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>LOG运算</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="DataVisualBtn">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>画图</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="DataVisualLabel">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>特殊类型图：</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="HeatMapBtn">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>1. HeatMap</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="OxygenTab">
@@ -224,7 +433,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-4</y>
+            <y>0</y>
             <width>1193</width>
             <height>777</height>
            </rect>
@@ -269,24 +478,25 @@
    <slots>
     <slot>DataVisualPlot()</slot>
     <slot>OxygenVisualPlot()</slot>
+    <slot>HeatMapPlot()</slot>
    </slots>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>InputBtn</sender>
+   <sender>OxygenVisualBtn</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
-   <slot>OpenFile()</slot>
+   <slot>OxygenVisualPlot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
-     <y>199</y>
+     <x>108</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
-     <x>174</x>
-     <y>12</y>
+     <x>804</x>
+     <y>456</y>
     </hint>
    </hints>
   </connection>
@@ -307,34 +517,50 @@
    </hints>
   </connection>
   <connection>
-   <sender>DataVisualBtn</sender>
+   <sender>InputBtn</sender>
    <signal>clicked()</signal>
-   <receiver>DataVisualWidget</receiver>
-   <slot>DataVisualPlot()</slot>
+   <receiver>Form</receiver>
+   <slot>OpenFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>185</y>
+     <x>95</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
-     <x>104</x>
-     <y>227</y>
+     <x>174</x>
+     <y>12</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>OxygenVisualBtn</sender>
+   <sender>DataVisualBtn</sender>
    <signal>clicked()</signal>
-   <receiver>OxygenVisualWidget</receiver>
-   <slot>OxygenVisualPlot()</slot>
+   <receiver>Form</receiver>
+   <slot>DataVisualPlot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>108</x>
-     <y>181</y>
+     <x>90</x>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
-     <x>105</x>
-     <y>269</y>
+     <x>804</x>
+     <y>456</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HeatMapBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>HeapMapPlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>762</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>263</x>
+     <y>-10</y>
     </hint>
    </hints>
   </connection>
@@ -344,5 +570,6 @@
   <slot>Calculate()</slot>
   <slot>DataVisualPlot()</slot>
   <slot>OxygenVisualPlot()</slot>
+  <slot>HeapMapPlot()</slot>
  </slots>
 </ui>
