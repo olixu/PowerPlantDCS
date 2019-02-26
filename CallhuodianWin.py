@@ -11,6 +11,7 @@ import pandas as pd
 import logging
 import logging.config
 from MatplotlibWidget import *
+from sklearn import preprocessing
 logging.config.fileConfig("database/log_config.config")
 
 
@@ -85,7 +86,7 @@ class MainWindow(QMainWindow):
                    '给煤机D给煤量', '给煤机E给煤量', '给煤机F给煤量']
         raw_主蒸汽压力 = ['主蒸汽压力']
         raw_炉膛出口烟温度 = ['炉膛烟温探针B']
-        raw_主蒸汽温度 = ['主蒸汽温度1', '主蒸汽温度2']
+        raw_主蒸汽温度 = ['主蒸汽温度1']
         raw_机组负荷 = ['负荷']
         raw_给水温度 = ['省煤器进口给水温度']
         raw_给水流量 = ['给水流量']
@@ -99,7 +100,7 @@ class MainWindow(QMainWindow):
         给煤量 = self.plant_data[raw_给煤量].sum(1)
         主蒸汽压力 = self.plant_data[raw_主蒸汽压力]
         炉膛出口烟温度 = self.plant_data[raw_炉膛出口烟温度]
-        主蒸汽温度 = self.plant_data[raw_主蒸汽温度].mean(1)
+        主蒸汽温度 = self.plant_data[raw_主蒸汽温度]
         机组负荷 = self.plant_data[raw_机组负荷]
         给水温度 = self.plant_data[raw_给水温度]
         给水流量 = self.plant_data[raw_给水流量]
@@ -157,8 +158,9 @@ class MainWindow(QMainWindow):
     def HeapMapPlot(self):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
+        norm_data = (self.data_pre_handle - self.data_pre_handle.min())/(self.data_pre_handle.max() - self.data_pre_handle.min())
         self.ui.DataVisualWidget.setVisible(True)
-        self.ui.DataVisualWidget.mpl.start_plot()
+        self.ui.DataVisualWidget.mpl.draw_heatmap(norm_data)
         print("正在数据可视化画图")
         self.logger.info("画了一幅图片，参数是：")
         print(self.ui.XComboBox.currentText())

@@ -1,7 +1,7 @@
 import sys
 import random
 import matplotlib
-
+import seaborn as sns
 matplotlib.use("Qt5Agg")
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QSizePolicy, QWidget
@@ -44,6 +44,13 @@ class MyMplCanvas(FigureCanvas):
         self.axes.set_ylabel('Y轴:' + ylabel)
         self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
+        self.draw()
+
+    def draw_heatmap(self, norm_data):
+        self.axes.cla()
+        corrmat = norm_data.corr()
+        sns.heatmap(corrmat, square=True)
+        plt.show()
         self.draw()
 
 
