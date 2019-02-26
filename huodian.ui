@@ -46,7 +46,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="DataMiningTab">
      <attribute name="title">
@@ -376,8 +376,8 @@
      <widget class="QPushButton" name="OxygenVisualBtn">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>620</y>
+        <x>720</x>
+        <y>680</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -386,7 +386,7 @@
        <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
       </property>
       <property name="text">
-       <string>画图</string>
+       <string>预测</string>
       </property>
      </widget>
      <widget class="MatplotlibWidget" name="OxygenVisualValidationWidget" native="true">
@@ -402,9 +402,29 @@
      <widget class="QLabel" name="OxygenLabel">
       <property name="geometry">
        <rect>
-        <x>384</x>
-        <y>600</y>
-        <width>911</width>
+        <x>110</x>
+        <y>590</y>
+        <width>611</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="CrossValidationLabel">
+      <property name="geometry">
+       <rect>
+        <x>830</x>
+        <y>590</y>
+        <width>611</width>
         <height>51</height>
        </rect>
       </property>

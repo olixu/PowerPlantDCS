@@ -16,6 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Imputer
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import cross_val_score
 logging.config.fileConfig("database/log_config.config")
 
 
@@ -41,9 +42,32 @@ class InputDate_Thread(QThread):
         time_cost = endtime-starttime
         self.sinOut.emit(str(time_cost), plant_data)
 
+
+# 烟气含氧量软测量中的交叉验证的线程
+class CrossValidation_Thread(QThread):
+    # 定义信号：str
+    sinOut = pyqtSignal(range, list)
+
+    def __init__(self):
+        super(CrossValidation_Thread, self).__init__()
+
+    def cross_validation(self, train_X, train_y):
+        self.train_X = train_X
+        self.train_y = train_y
+
+    def run(self):
+        params = range(1, 10)
+        test_scores = []
+        for param in params:
+            clf = XGBRegressor(max_depth=param)
+            test_score = np.sqrt(-cross_val_score(clf, self.train_X, self.train_y, cv=10, scoring='neg_mean_squared_error'))
+            test_scores.append(np.mean(test_score))
+        print(test_scores)
+        print("this is in test")
+        self.sinOut.emit(params, test_scores)
+
+
 # 主窗口的MainWindow类
-
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -52,8 +76,10 @@ class MainWindow(QMainWindow):
         # 各个线程初始化
         # 1. 连接信号和槽函数
         self.DataMiningthread = InputDate_Thread()
-        self.DataMiningthread.sinOut.connect(
-            self.DataMiningLabel_Change_Status)
+        self.DataMiningthread.sinOut.connect(self.DataMiningLabel_Change_Status)
+
+        self.CrossValidationthread = CrossValidation_Thread()
+        self.CrossValidationthread.sinOut.connect(self.CrossValidationLabel_Change_Status)
 
         # 定义一些变量
 
@@ -76,6 +102,17 @@ class MainWindow(QMainWindow):
         self.logger.info("正在导入，文件较大，请等待")
         self.DataMiningthread.get_filename(self.filename)
         self.DataMiningthread.start()
+
+    # 烟气含氧量软测量标签下的Label提示框显示信息变化
+    def CrossValidationLabel_Change_Status(self, params, test_scores):
+        self.ui.OxygenVisualValidationWidget.setVisible(True)
+        self.ui.OxygenVisualValidationWidget.mpl.start_plot("max_depth vs CV Error",
+                                                            "max_depth",
+                                                            "CV Error",
+                                                            params,
+                                                            test_scores)
+        self.ui.CrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
+        self.logger.info("最佳的max_depth为："+str(3))
 
     # 数据预处理标签下的Label提示框显示信息变化
     def DataMiningLabel_Change_Status(self, time_cost, plant_data):
@@ -143,11 +180,13 @@ class MainWindow(QMainWindow):
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
         self.ui.DataVisualWidget.setVisible(True)
         self.ui.DataVisualWidget.mpl.start_plot(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText(),
-												self.ui.XComboBox.currentText(),
-												self.ui.YComboBox.currentText(),
-												self.data_pre_handle[self.ui.XComboBox.currentText()],
-												self.data_pre_handle[self.ui.YComboBox.currentText()]
-												)
+                                                self.ui.XComboBox.currentText(),
+                                                self.ui.YComboBox.currentText(),
+                                                self.data_pre_handle[self.ui.XComboBox.currentText(
+                                                )],
+                                                self.data_pre_handle[self.ui.YComboBox.currentText(
+                                                )]
+                                                )
         print("正在数据可视化画图")
         self.logger.info("画了一幅图片，参数是：")
         print(self.ui.XComboBox.currentText())
@@ -158,11 +197,12 @@ class MainWindow(QMainWindow):
         # print(self.data_pre_handle[self.ui.XComboBox.currentText()].shape)
         # print(self.data_pre_handle[self.ui.YComboBox.currentText()].shape)
 
-	# 数据可视化标签下的槽函数：Heatmap->HeapMapPlot()
+        # 数据可视化标签下的槽函数：Heatmap->HeapMapPlot()
     def HeapMapPlot(self):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
-        norm_data = (self.data_pre_handle - self.data_pre_handle.min())/(self.data_pre_handle.max() - self.data_pre_handle.min())
+        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
+            (self.data_pre_handle.max() - self.data_pre_handle.min())
         self.ui.DataVisualWidget.setVisible(True)
         self.ui.DataVisualWidget.mpl.draw_heatmap(norm_data)
         print("正在数据可视化画图")
@@ -173,10 +213,12 @@ class MainWindow(QMainWindow):
     # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
     def OxygenVisualPlot(self):
         # self.ui.OxygenWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
-        norm_data = (self.data_pre_handle - self.data_pre_handle.min())/(self.data_pre_handle.max() - self.data_pre_handle.min())
+        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
+            (self.data_pre_handle.max() - self.data_pre_handle.min())
         y = norm_data.含氧量
         X = norm_data.drop(['含氧量'], axis=1)
-        train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
+        train_X, test_X, train_y, test_y = train_test_split(
+            X.as_matrix(), y.as_matrix(), test_size=0.25)
 
         my_imputer = Imputer()
         train_X = my_imputer.fit_transform(train_X)
@@ -186,22 +228,28 @@ class MainWindow(QMainWindow):
         my_model.fit(train_X, train_y, verbose=False)
 
         predictions = my_model.predict(test_X)
-        print("Mean Absolute Error:" + str(mean_absolute_error(predictions, test_y)))
+        MAE = mean_absolute_error(predictions, test_y)
+        print("Mean Absolute Error:" + str(MAE))
 
         self.ui.OxygenVisualWidget.setVisible(True)
         self.ui.OxygenVisualWidget.mpl.Oxygen_plot("烟气含氧量软测量结果",
-												  "样本点",
-												  "烟气含氧量",
-												  range(100),
-                                                  predictions[0:100],
-                                                  test_y[0:100]
-												)
+                                                   "样本点",
+                                                   "烟气含氧量",
+                                                   range(
+                                                       100),
+                                                   predictions[0:100],
+                                                   test_y[0:100]
+                                                   )
+        self.ui.OxygenLabel.setText("预测完成，平均绝对误差为："+str(MAE))
+        self.ui.CrossValidationLabel.setText("正在进行交叉验证，寻找决策树最佳深度")
         print("正在烟气含氧量画图")
         self.logger.info("画了一幅图片，参数是：")
+        self.CrossValidationthread.cross_validation(train_X, train_y)
+        self.CrossValidationthread.start()
 
 
 if __name__ == '__main__':
-    app=QApplication(sys.argv)
-    win=MainWindow()
+    app = QApplication(sys.argv)
+    win = MainWindow()
     win.show()
     sys.exit(app.exec_())
