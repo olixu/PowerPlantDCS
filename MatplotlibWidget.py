@@ -40,7 +40,7 @@ class MyMplCanvas(FigureCanvas):
     def start_plot(self, title, xlabel, ylabel, x, y):
         self.axes.cla()
         self.fig.suptitle(title)
-        self.axes.plot(x, y, 'r')
+        self.axes.scatter(x, y)
         self.axes.set_ylabel('Y轴:' + ylabel)
         self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
