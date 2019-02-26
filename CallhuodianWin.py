@@ -12,6 +12,10 @@ import logging
 import logging.config
 from MatplotlibWidget import *
 from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import Imputer
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error
 logging.config.fileConfig("database/log_config.config")
 
 
@@ -166,11 +170,32 @@ class MainWindow(QMainWindow):
         print(self.ui.XComboBox.currentText())
         print("输出结果完毕")
 
-    # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()
+    # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
     def OxygenVisualPlot(self):
         # self.ui.OxygenWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
+        norm_data = (self.data_pre_handle - self.data_pre_handle.min())/(self.data_pre_handle.max() - self.data_pre_handle.min())
+        y = norm_data.含氧量
+        X = norm_data.drop(['含氧量'], axis=1)
+        train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
+
+        my_imputer = Imputer()
+        train_X = my_imputer.fit_transform(train_X)
+        test_X = my_imputer.transform(test_X)
+
+        my_model = XGBRegressor()
+        my_model.fit(train_X, train_y, verbose=False)
+
+        predictions = my_model.predict(test_X)
+        print("Mean Absolute Error:" + str(mean_absolute_error(predictions, test_y)))
+
         self.ui.OxygenVisualWidget.setVisible(True)
-        self.ui.OxygenVisualWidget.mpl.start_plot()
+        self.ui.OxygenVisualWidget.mpl.Oxygen_plot("烟气含氧量软测量结果",
+												  "样本点",
+												  "烟气含氧量",
+												  range(100),
+                                                  predictions[0:100],
+                                                  test_y[0:100]
+												)
         print("正在烟气含氧量画图")
         self.logger.info("画了一幅图片，参数是：")
 

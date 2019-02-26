@@ -45,6 +45,16 @@ class MyMplCanvas(FigureCanvas):
         self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
         self.draw()
+    
+    def Oxygen_plot(self, title, xlabel, ylabel, x, predictions, real):
+        self.axes.cla()
+        self.fig.suptitle(title)
+        self.axes.plot(x, predictions, 'b-', label='预测值')
+        self.axes.plot(x, real, 'g-', label='实际值')
+        self.axes.set_ylabel('Y轴:' + ylabel)
+        self.axes.set_xlabel('X轴:' + xlabel)
+        self.axes.grid(True)
+        self.draw()
 
     def draw_heatmap(self, norm_data):
         self.axes.cla()
