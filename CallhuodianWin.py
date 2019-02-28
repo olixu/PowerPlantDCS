@@ -17,6 +17,7 @@ from sklearn.preprocessing import Imputer
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import cross_val_score
+from pyswarm import pso
 logging.config.fileConfig("database/log_config.config")
 
 
@@ -198,6 +199,7 @@ class MainWindow(QMainWindow):
         # print(self.data_pre_handle[self.ui.YComboBox.currentText()].shape)
 
         # 数据可视化标签下的槽函数：Heatmap->HeapMapPlot()
+    
     def HeapMapPlot(self):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
@@ -246,6 +248,61 @@ class MainWindow(QMainWindow):
         self.logger.info("画了一幅图片，参数是：")
         self.CrossValidationthread.cross_validation(train_X, train_y)
         self.CrossValidationthread.start()
+
+    # 效率优化标签下的槽函数：开始优化->EfficiencyImprove() 
+    def EfficiencyImprove(self):
+        # 导入数据，等效率软测量做完以后再改正
+        data = pd.read_csv("filterdata.csv")
+        
+        # 构建模拟的效率数据
+        效率 = np.random.uniform(low=88.0, high=91.0, size=(5760, 1))
+        data['效率'] = 效率
+        
+        #data_norm = (data-data.min())/(data.max()-data.min())
+        # 分成训练和验证数据
+        data_norm = data
+        y = data_norm.效率
+        X = data_norm.drop(['效率'], axis=1)
+        train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
+
+        # 用sklearn.preprocessing.Imputer类来处理使用np.nan对缺失值进行编码过的数据集。
+        my_imputer = Imputer()
+        train_X = my_imputer.fit_transform(train_X)
+        test_X = my_imputer.transform(test_X)
+
+        #使用xgboost进行训练
+        my_model = XGBRegressor()
+        my_model.fit(train_X, train_y, verbose=False)
+
+        def huodian_pso(x):
+            def huodian(input_x):
+                x['二次风量'] = input_x[0]
+                x['给煤量'] = input_x[1]
+                xgb_predict = my_model.predict(x)
+                return -xgb_predict[0]
+
+            lb = [x['二次风量']*0.95, x['给煤量']*0.95]
+            ub = [x['二次风量']*1.05, x['给煤量']*1.05]
+
+
+            xopt, fopt = pso(huodian, lb, ub)
+            #print("优化后的效率为：",  -fopt)
+            return -fopt
+            #outcome = huodian([505, 152])
+        new = []
+        old = []
+        for i in range(10):
+            y = data_norm.效率.iloc[i]
+            x = data_norm.drop(['效率'], axis=1).iloc[i]
+            print("原始的效率为：", y)
+            out = huodian_pso(x)
+            old.append(y)
+            if out > y:
+                print("优化后的效率为：",  out)
+                new.append(out)
+            else:
+                new.append(y)
+                print("优化后的效率为：",  y)
 
 
 if __name__ == '__main__':

@@ -46,7 +46,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="DataMiningTab">
      <attribute name="title">
@@ -449,6 +449,162 @@
      <attribute name="title">
       <string>效率优化</string>
      </attribute>
+     <widget class="MatplotlibWidget" name="EfficiencyImproveWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>70</y>
+        <width>600</width>
+        <height>480</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>70</y>
+        <width>785</width>
+        <height>481</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="EfficiencyImproveGridLayout">
+       <item row="4" column="2">
+        <widget class="QLabel" name="xiaolv_after_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="xiaolvlabel">
+         <property name="text">
+          <string>效率：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="geimeiliang_after_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="xiaolv_before_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="ercifenglianglabel">
+         <property name="text">
+          <string>二次风量：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="ercifengliang_before_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="youhuaqianlabel">
+         <property name="text">
+          <string>优化前</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="youhuahoulabel">
+         <property name="text">
+          <string>优化后</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="Advicelabel">
+         <property name="text">
+          <string>控制量优化建议</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="geimeiliang_before_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="ercifengliang_after_label">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="geimeilianglabel">
+         <property name="text">
+          <string>给煤量：</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="EfficiencyImproveBtn">
+      <property name="geometry">
+       <rect>
+        <x>644</x>
+        <y>669</y>
+        <width>251</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>开始优化</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="EfficiencyImproveLabel">
+      <property name="geometry">
+       <rect>
+        <x>124</x>
+        <y>590</y>
+        <width>591</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="LogTab">
      <attribute name="title">
@@ -531,8 +687,8 @@
    <slot>OxygenVisualPlot()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>789</y>
+     <x>713</x>
+     <y>849</y>
     </hint>
     <hint type="destinationlabel">
      <x>804</x>
@@ -604,6 +760,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>EfficiencyImproveBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>EfficiencyImprove()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>727</x>
+     <y>818</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>659</x>
+     <y>16</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFile()</slot>
@@ -611,5 +783,6 @@
   <slot>DataVisualPlot()</slot>
   <slot>OxygenVisualPlot()</slot>
   <slot>HeapMapPlot()</slot>
+  <slot>EfficiencyImprove()</slot>
  </slots>
 </ui>
