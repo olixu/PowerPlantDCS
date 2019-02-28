@@ -63,6 +63,14 @@ class MyMplCanvas(FigureCanvas):
         plt.show()
         self.draw()
 
+    def EfficiencyImprove_plot(self, title, xlabel, ylabel, x, new, old):
+        self.fig.suptitle(title)
+        self.axes.scatter(x, old, c='g')
+        self.axes.scatter(x, new, c='b')
+        self.axes.set_ylabel('Y轴:' + ylabel)
+        self.axes.set_xlabel('X轴:' + xlabel)
+        self.axes.grid(True)
+        self.draw()
 
 class MatplotlibWidget(QWidget):
     def __init__(self, parent=None):

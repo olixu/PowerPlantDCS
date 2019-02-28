@@ -68,6 +68,79 @@ class CrossValidation_Thread(QThread):
         self.sinOut.emit(params, test_scores)
 
 
+# 效率优化控制的线程
+class EfficiencyImprove_Thread(QThread):
+    # 定义信号：int[是否要清空原来图片的标志位 0:不清空 1:清空], int[横坐标], float[优化后的值], float[优化前的值], float[效率平均提高]
+    sinOut = pyqtSignal(int, int, float, float, float, list)
+
+    def __init__(self):
+        super(EfficiencyImprove_Thread, self).__init__()
+
+    def EfficiencyImprove(self):
+        print("创建量一个线程")
+
+    def run(self):
+        # 清空原来的图表
+        self.sinOut.emit(1, 0, 0.0, 0.0, 0, [])
+
+        # 导入数据，等效率软测量做完以后再改正
+        data = pd.read_csv("filterdata.csv")
+        
+        # 构建模拟的效率数据
+        效率 = np.random.uniform(low=88.0, high=91.0, size=(5760, 1))
+        data['效率'] = 效率
+        
+        #data_norm = (data-data.min())/(data.max()-data.min())
+        # 分成训练和验证数据
+        data_norm = data
+        y = data_norm.效率
+        X = data_norm.drop(['效率'], axis=1)
+        train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
+
+        # 用sklearn.preprocessing.Imputer类来处理使用np.nan对缺失值进行编码过的数据集。
+        my_imputer = Imputer()
+        train_X = my_imputer.fit_transform(train_X)
+        test_X = my_imputer.transform(test_X)
+
+        #使用xgboost进行训练
+        my_model = XGBRegressor(max_depth=9)
+        my_model.fit(train_X, train_y, verbose=False)
+
+        def huodian_pso(x):
+            def huodian(input_x):
+                x['二次风量'] = input_x[0]
+                x['给煤量'] = input_x[1]
+                xgb_predict = my_model.predict(x)
+                return -xgb_predict[0]
+
+            lb = [x['二次风量']*0.95, x['给煤量']*0.95]
+            ub = [x['二次风量']*1.05, x['给煤量']*1.05]
+
+
+            xopt, fopt = pso(huodian, lb, ub)
+            #print("优化后的效率为：",  -fopt)
+            return -fopt, xopt
+            #outcome = huodian([505, 152])
+        new = []
+        old = []
+        differ = []
+        for i in range(10):
+            y = data_norm.效率.iloc[i]
+            x = data_norm.drop(['效率'], axis=1).iloc[i]
+            print("原始的效率为：", y)
+            out, canshu = huodian_pso(x)
+            old.append(y)
+            if out > y:
+                print("优化后的效率为：",  out)
+                new.append(out)
+            else:
+                new.append(y)
+                print("优化后的效率为：",  y)
+            differ.append(new[i]-old[i])
+            youhuacanshu = [data_norm.二次风量.iloc[i], canshu[0], data_norm.给煤量.iloc[i], canshu[1], old[i], new[i]]
+            self.sinOut.emit(0, i, float(new[i]), float(old[i]), 0, youhuacanshu)
+        self.sinOut.emit(0, 0, 0, 0, sum(differ)/10.0, [])
+
 # 主窗口的MainWindow类
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -82,6 +155,9 @@ class MainWindow(QMainWindow):
         self.CrossValidationthread = CrossValidation_Thread()
         self.CrossValidationthread.sinOut.connect(self.CrossValidationLabel_Change_Status)
 
+        self.EfficiencyImprovethread = EfficiencyImprove_Thread()
+        self.EfficiencyImprovethread.sinOut.connect(self.EfficiencyImprove_Change_Status)
+        
         # 定义一些变量
 
         self.df_rows = 8
@@ -104,6 +180,13 @@ class MainWindow(QMainWindow):
         self.DataMiningthread.get_filename(self.filename)
         self.DataMiningthread.start()
 
+
+    # 数据预处理标签下的Label提示框显示信息变化
+    def DataMiningLabel_Change_Status(self, time_cost, plant_data):
+        self.plant_data = plant_data
+        self.ui.DataMiningLabel.setText("导入完成，共耗费："+str(time_cost))
+        self.logger.info("导入完成，共耗费："+str(time_cost))
+
     # 烟气含氧量软测量标签下的Label提示框显示信息变化
     def CrossValidationLabel_Change_Status(self, params, test_scores):
         self.ui.OxygenVisualValidationWidget.setVisible(True)
@@ -115,11 +198,29 @@ class MainWindow(QMainWindow):
         self.ui.CrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
         self.logger.info("最佳的max_depth为："+str(3))
 
-    # 数据预处理标签下的Label提示框显示信息变化
-    def DataMiningLabel_Change_Status(self, time_cost, plant_data):
-        self.plant_data = plant_data
-        self.ui.DataMiningLabel.setText("导入完成，共耗费："+str(time_cost))
-        self.logger.info("导入完成，共耗费："+str(time_cost))
+    # 效率优化标签下的Label提示框显示信息变化
+    def EfficiencyImprove_Change_Status(self, clear, i, new, old, xiaolv, youhuacanshu):
+        if clear == 1:
+            self.ui.EfficiencyImproveLabel.setText("正在通过PSO优化效率")
+            self.ui.EfficiencyImproveWidget.mpl.axes.cla()
+        else:
+            if xiaolv == 0:
+                self.ui.EfficiencyImproveWidget.setVisible(True)
+                self.ui.EfficiencyImproveWidget.mpl.EfficiencyImprove_plot("效率优化前后对比",
+                                                                            "sample",
+                                                                            "效率",
+                                                                            i,
+                                                                            new,
+                                                                            old)
+                self.ui.ercifengliang_before_label.setText(str(youhuacanshu[0])[0:6])
+                self.ui.ercifengliang_after_label.setText(str(youhuacanshu[1])[0:6])
+                self.ui.geimeiliang_before_label.setText(str(youhuacanshu[2])[0:6])
+                self.ui.geimeiliang_after_label.setText(str(youhuacanshu[3])[0:6])
+                self.ui.xiaolv_before_label.setText(str(youhuacanshu[4])[0:6])
+                self.ui.xiaolv_after_label.setText(str(youhuacanshu[5])[0:6])
+            else:
+                self.ui.EfficiencyImproveLabel.setText("效率平均提高：" + str(xiaolv)[0:4] + "%")
+            self.logger.info("导入完成，共耗费：")
 
     # 数据预处理标签下的槽函数：数据预处理->Calculate()
     def Calculate(self):
@@ -251,58 +352,9 @@ class MainWindow(QMainWindow):
 
     # 效率优化标签下的槽函数：开始优化->EfficiencyImprove() 
     def EfficiencyImprove(self):
-        # 导入数据，等效率软测量做完以后再改正
-        data = pd.read_csv("filterdata.csv")
-        
-        # 构建模拟的效率数据
-        效率 = np.random.uniform(low=88.0, high=91.0, size=(5760, 1))
-        data['效率'] = 效率
-        
-        #data_norm = (data-data.min())/(data.max()-data.min())
-        # 分成训练和验证数据
-        data_norm = data
-        y = data_norm.效率
-        X = data_norm.drop(['效率'], axis=1)
-        train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
-
-        # 用sklearn.preprocessing.Imputer类来处理使用np.nan对缺失值进行编码过的数据集。
-        my_imputer = Imputer()
-        train_X = my_imputer.fit_transform(train_X)
-        test_X = my_imputer.transform(test_X)
-
-        #使用xgboost进行训练
-        my_model = XGBRegressor()
-        my_model.fit(train_X, train_y, verbose=False)
-
-        def huodian_pso(x):
-            def huodian(input_x):
-                x['二次风量'] = input_x[0]
-                x['给煤量'] = input_x[1]
-                xgb_predict = my_model.predict(x)
-                return -xgb_predict[0]
-
-            lb = [x['二次风量']*0.95, x['给煤量']*0.95]
-            ub = [x['二次风量']*1.05, x['给煤量']*1.05]
-
-
-            xopt, fopt = pso(huodian, lb, ub)
-            #print("优化后的效率为：",  -fopt)
-            return -fopt
-            #outcome = huodian([505, 152])
-        new = []
-        old = []
-        for i in range(10):
-            y = data_norm.效率.iloc[i]
-            x = data_norm.drop(['效率'], axis=1).iloc[i]
-            print("原始的效率为：", y)
-            out = huodian_pso(x)
-            old.append(y)
-            if out > y:
-                print("优化后的效率为：",  out)
-                new.append(out)
-            else:
-                new.append(y)
-                print("优化后的效率为：",  y)
+        print("正在进入槽函数")
+        self.EfficiencyImprovethread.EfficiencyImprove()
+        self.EfficiencyImprovethread.start()
 
 
 if __name__ == '__main__':
