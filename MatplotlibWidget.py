@@ -65,6 +65,8 @@ class MyMplCanvas(FigureCanvas):
 
     def EfficiencyImprove_plot(self, title, xlabel, ylabel, x, new, old):
         self.fig.suptitle(title)
+        self.axes.set_ylim((87, 92))
+        self.axes.set_xlim((-1, 10))
         self.axes.scatter(x, old, c='g')
         self.axes.scatter(x, new, c='b')
         self.axes.set_ylabel('Y轴:' + ylabel)
