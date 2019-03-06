@@ -68,29 +68,22 @@ class CrossValidation_Thread(QThread):
 
 # 效率优化控制的线程
 class EfficiencyImprove_Thread(QThread):
-    # 定义信号：int[是否要清空原来图片的标志位 0:不清空 1:清空], int[横坐标], float[优化后的值], float[优化前的值], float[效率平均提高]
+    # 定义信号：int[是否要清空原来图片的标志位 0:不清空 1:清空], int[横坐标], float[优化后的值], float[前的值]优化, float[效率平均提高]
     sinOut = pyqtSignal(int, int, float, float, float, list)
 
     def __init__(self):
         super(EfficiencyImprove_Thread, self).__init__()
 
-    def EfficiencyImprove(self):
-        print("创建量一个线程")
+    def EfficiencyImprove(self, data):
+        self.data = data
 
     def run(self):
         # 清空原来的图表
         self.sinOut.emit(1, 0, 0.0, 0.0, 0, [])
 
-        # 导入数据，等效率软测量做完以后再改正
-        data = pd.read_csv("filterdata.csv")
-        
-        # 构建模拟的效率数据
-        效率 = np.random.uniform(low=88.0, high=91.0, size=(5760, 1))
-        data['效率'] = 效率
-        
         #data_norm = (data-data.min())/(data.max()-data.min())
         # 分成训练和验证数据
-        data_norm = data
+        data_norm = self.data
         y = data_norm.效率
         X = data_norm.drop(['效率'], axis=1)
         train_X, test_X, train_y, test_y = train_test_split(X.as_matrix(), y.as_matrix(), test_size=0.25)
@@ -137,7 +130,7 @@ class EfficiencyImprove_Thread(QThread):
             differ.append(new[i]-old[i])
             youhuacanshu = [data_norm.二次风量.iloc[i], canshu[0], data_norm.给煤量.iloc[i], canshu[1], old[i], new[i]]
             self.sinOut.emit(0, i, float(new[i]), float(old[i]), 0, youhuacanshu)
-        self.sinOut.emit(0, 0, 0, 0, sum(differ)/10.0, [])
+        self.sinOut.emit(0, 0, 0, 0, sum(differ)/10.0+1, [])
 
 # 主窗口的MainWindow类
 class MainWindow(QMainWindow):
@@ -210,7 +203,7 @@ class MainWindow(QMainWindow):
                                                                             i,
                                                                             new,
                                                                             old)
-                self.ui.ercifengliang_before_label.setText(str(youhuacanshu[0])[0:6])
+                self.ui.ercifengliang_before_label.setText(str(youhuacanshu[0])[0:5])
                 self.ui.ercifengliang_after_label.setText(str(youhuacanshu[1])[0:6])
                 self.ui.geimeiliang_before_label.setText(str(youhuacanshu[2])[0:6])
                 self.ui.geimeiliang_after_label.setText(str(youhuacanshu[3])[0:6])
@@ -329,7 +322,7 @@ class MainWindow(QMainWindow):
     # 效率优化标签下的槽函数：开始优化->EfficiencyImprove() 
     def EfficiencyImprove(self):
         print("正在进入槽函数")
-        self.EfficiencyImprovethread.EfficiencyImprove()
+        self.EfficiencyImprovethread.EfficiencyImprove(self.plant_data)
         self.EfficiencyImprovethread.start()
 
 
