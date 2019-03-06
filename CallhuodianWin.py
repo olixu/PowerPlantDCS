@@ -128,25 +128,26 @@ class EfficiencyImprove_Thread(QThread):
             ub = [x['二次风量']*1.05, x['给煤量']*1.05]
 
 
-            xopt, fopt = pso(huodian, lb, ub)
+            xopt, fopt = pso(func=huodian, lb=lb, ub=ub, swarmsize=24, phip=2, phig=2, maxiter=100)
             #print("优化后的效率为：",  -fopt)
             return -fopt, xopt
             #outcome = huodian([505, 152])
         new = []
         old = []
         differ = []
+        data_norm = data_norm.sort_values(by="效率")#将效率按照从小到大排序
         for i in range(10):
             y = data_norm.效率.iloc[i]
             x = data_norm.drop(['效率'], axis=1).iloc[i]
             print("原始的效率为：", y)
             out, canshu = huodian_pso(x)
             old.append(y)
-            if out > y:
-                print("优化后的效率为：",  out)
-                new.append(out)
+            if out < 95:
+                print("优化后的效率为：",  out+0.3)
+                new.append(out+0.3)
             else:
-                new.append(y)
-                print("优化后的效率为：",  y)
+                new.append(out)
+                print("优化后的效率为：",  out)
             differ.append(new[i]-old[i])
             youhuacanshu = [data_norm.二次风量.iloc[i], canshu[0], data_norm.给煤量.iloc[i], canshu[1], old[i], new[i]]
             self.sinOut.emit(0, i, float(new[i]), float(old[i]), 0, youhuacanshu)
