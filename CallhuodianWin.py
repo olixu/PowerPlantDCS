@@ -65,6 +65,28 @@ class CrossValidation_Thread(QThread):
         print("this is in test")
         self.sinOut.emit(params, test_scores)
 
+# 效率软测量中的交叉验证的线程
+class EfficiencyCrossValidation_Thread(QThread):
+    # 定义信号：str
+    sinOut = pyqtSignal(range, list)
+
+    def __init__(self):
+        super(EfficiencyCrossValidation_Thread, self).__init__()
+
+    def cross_validation(self, train_X, train_y):
+        self.train_X = train_X
+        self.train_y = train_y
+
+    def run(self):
+        params = range(1, 10)
+        test_scores = []
+        for param in params:
+            clf = XGBRegressor(max_depth=param)
+            test_score = np.sqrt(-cross_val_score(clf, self.train_X, self.train_y, cv=10, scoring='neg_mean_squared_error'))
+            test_scores.append(np.mean(test_score))
+        print(test_scores)
+        print("this is in test")
+        self.sinOut.emit(params, test_scores)
 
 # 效率优化控制的线程
 class EfficiencyImprove_Thread(QThread):
@@ -146,6 +168,9 @@ class MainWindow(QMainWindow):
         self.CrossValidationthread = CrossValidation_Thread()
         self.CrossValidationthread.sinOut.connect(self.CrossValidationLabel_Change_Status)
 
+        self.EfficiencyCrossValidationthread = EfficiencyCrossValidation_Thread()
+        self.EfficiencyCrossValidationthread.sinOut.connect(self.EfficiencyCrossValidationLabel_Change_Status)
+        
         self.EfficiencyImprovethread = EfficiencyImprove_Thread()
         self.EfficiencyImprovethread.sinOut.connect(self.EfficiencyImprove_Change_Status)
         
@@ -188,6 +213,17 @@ class MainWindow(QMainWindow):
                                                             test_scores)
         self.ui.CrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
         self.logger.info("最佳的max_depth为："+str(3))
+
+    # 效率软测量标签下的Label提示框显示信息变化
+    def EfficiencyCrossValidationLabel_Change_Status(self, params, test_scores):
+        self.ui.EfficiencyVisualValidationWidget.setVisible(True)
+        self.ui.EfficiencyVisualValidationWidget.mpl.start_plot("max_depth vs CV Error",
+                                                            "max_depth",
+                                                            "CV Error",
+                                                            params,
+                                                            test_scores)
+        self.ui.EfficiencyCrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
+        #self.logger.info("最佳的max_depth为："+str(3))
 
     # 效率优化标签下的Label提示框显示信息变化
     def EfficiencyImprove_Change_Status(self, clear, i, new, old, xiaolv, youhuacanshu):
@@ -284,7 +320,6 @@ class MainWindow(QMainWindow):
 
     # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
     def OxygenVisualPlot(self):
-        # self.ui.OxygenWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
         norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
             (self.data_pre_handle.max() - self.data_pre_handle.min())
         y = norm_data.含氧量
@@ -318,6 +353,42 @@ class MainWindow(QMainWindow):
         self.logger.info("画了一幅图片，参数是：")
         self.CrossValidationthread.cross_validation(train_X, train_y)
         self.CrossValidationthread.start()
+
+    # 效率软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
+    def EfficiencyVisualPlot(self):
+        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
+            (self.data_pre_handle.max() - self.data_pre_handle.min())
+        y = norm_data.效率
+        X = norm_data.drop(['效率'], axis=1)
+        train_X, test_X, train_y, test_y = train_test_split(
+            X.as_matrix(), y.as_matrix(), test_size=0.25)
+
+        my_imputer = Imputer()
+        train_X = my_imputer.fit_transform(train_X)
+        test_X = my_imputer.transform(test_X)
+
+        my_model = XGBRegressor()
+        my_model.fit(train_X, train_y, verbose=False)
+
+        predictions = my_model.predict(test_X)
+        MAE = mean_absolute_error(predictions, test_y)
+        print("Mean Absolute Error:" + str(MAE))
+
+        self.ui.EfficiencyVisualWidget.setVisible(True)
+        self.ui.EfficiencyVisualWidget.mpl.Oxygen_plot("效率软测量结果",
+                                                   "样本点",
+                                                   "效率",
+                                                   range(
+                                                       100),
+                                                   predictions[0:100],
+                                                   test_y[0:100]
+                                                   )
+        self.ui.EfficiencyLabel.setText("预测完成，平均绝对误差为："+str(MAE))
+        self.ui.EfficiencyCrossValidationLabel.setText("正在进行交叉验证，寻找决策树最佳深度")
+        print("正在画效率软测量的图")
+        self.logger.info("画了一幅图片，参数是：")
+        self.EfficiencyCrossValidationthread.cross_validation(train_X, train_y)
+        self.EfficiencyCrossValidationthread.start()
 
     # 效率优化标签下的槽函数：开始优化->EfficiencyImprove() 
     def EfficiencyImprove(self):

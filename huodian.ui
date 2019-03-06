@@ -46,7 +46,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="DataMiningTab">
      <attribute name="title">
@@ -444,6 +444,82 @@
      <attribute name="title">
       <string>效率软测量</string>
      </attribute>
+     <widget class="MatplotlibWidget" name="EfficiencyVisualWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>60</y>
+        <width>600</width>
+        <height>480</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="MatplotlibWidget" name="EfficiencyVisualValidationWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>840</x>
+        <y>60</y>
+        <width>600</width>
+        <height>480</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="EfficiencyVisualBtn">
+      <property name="geometry">
+       <rect>
+        <x>720</x>
+        <y>680</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">font: 15pt &quot;Ubuntu&quot;;</string>
+      </property>
+      <property name="text">
+       <string>预测</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="EfficiencyLabel">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>590</y>
+        <width>611</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="EfficiencyCrossValidationLabel">
+      <property name="geometry">
+       <rect>
+        <x>830</x>
+        <y>590</y>
+        <width>611</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="EfficiencyImproveTab">
      <attribute name="title">
@@ -776,6 +852,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>EfficiencyVisualBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>EfficiencyVisualPlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>771</x>
+     <y>828</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>690</x>
+     <y>9</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFile()</slot>
@@ -784,5 +876,6 @@
   <slot>OxygenVisualPlot()</slot>
   <slot>HeapMapPlot()</slot>
   <slot>EfficiencyImprove()</slot>
+  <slot>EfficiencyVisualPlot()</slot>
  </slots>
 </ui>
