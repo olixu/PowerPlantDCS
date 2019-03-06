@@ -20,7 +20,6 @@ from sklearn.model_selection import cross_val_score
 from pyswarm import pso
 logging.config.fileConfig("database/log_config.config")
 
-
 # 数据预处理标签下导入数据的线程
 class InputDate_Thread(QThread):
     # 定义信号：str, str, pd.DataFrame
@@ -40,7 +39,6 @@ class InputDate_Thread(QThread):
         endtime = datetime.datetime.now()
         time_cost = endtime-starttime
         self.sinOut.emit(str(time_cost), plant_data)
-
 
 # 烟气含氧量软测量中的交叉验证的线程
 class CrossValidation_Thread(QThread):
@@ -196,7 +194,6 @@ class MainWindow(QMainWindow):
         self.DataMiningthread.get_filename(self.filename)
         self.DataMiningthread.start()
 
-
     # 数据预处理标签下的Label提示框显示信息变化
     def DataMiningLabel_Change_Status(self, time_cost, plant_data):
         self.plant_data = plant_data
@@ -264,7 +261,6 @@ class MainWindow(QMainWindow):
         二次风温 = self.plant_data['二次风温']
         含氧量 = self.plant_data['含氧量']
         效率 = self.plant_data['效率']
-        self.data_pre_handle = self.plant_data
         ruanceliang_data = self.plant_data.describe()
 
         self.ui.DataMiningTableWidget.setRowCount(self.df_rows)
@@ -286,12 +282,22 @@ class MainWindow(QMainWindow):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
         self.ui.DataVisualWidget.setVisible(True)
-        self.ui.DataVisualWidget.mpl.start_plot(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText(),
+        if (self.ui.XComboBox.currentText() == 'sample'):
+            self.ui.DataVisualWidget.mpl.start_plot(self.ui.YComboBox.currentText()+'-'+'Sample',
                                                 self.ui.XComboBox.currentText(),
                                                 self.ui.YComboBox.currentText(),
-                                                self.data_pre_handle[self.ui.XComboBox.currentText(
+                                                list(range(len(self.plant_data[self.ui.YComboBox.currentText(
+                                                )]))),
+                                                self.plant_data[self.ui.YComboBox.currentText(
+                                                )]
+                                                )
+        else:
+            self.ui.DataVisualWidget.mpl.start_plot(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText(),
+                                                self.ui.XComboBox.currentText(),
+                                                self.ui.YComboBox.currentText(),
+                                                self.plant_data[self.ui.XComboBox.currentText(
                                                 )],
-                                                self.data_pre_handle[self.ui.YComboBox.currentText(
+                                                self.plant_data[self.ui.YComboBox.currentText(
                                                 )]
                                                 )
         print("正在数据可视化画图")
@@ -301,16 +307,16 @@ class MainWindow(QMainWindow):
         # print(self.ui.XComboBox.currentText()+'-'+self.ui.YComboBox.currentText())
         # print(self.ui.XComboBox.currentText())
         # print(self.ui.YComboBox.currentText())
-        # print(self.data_pre_handle[self.ui.XComboBox.currentText()].shape)
-        # print(self.data_pre_handle[self.ui.YComboBox.currentText()].shape)
+        # print(self.plant_data[self.ui.XComboBox.currentText()].shape)
+        # print(self.plant_data[self.ui.YComboBox.currentText()].shape)
 
         # 数据可视化标签下的槽函数：Heatmap->HeapMapPlot()
     
     def HeapMapPlot(self):
         # DataVisulWebEngine
         # self.ui.DataVisualWebEngine.load(QUrl.fromLocalFile('home/boss/Desktop/pyqttest/PyQt5-master/Chapter09/if_hs300_bais.html'))
-        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
-            (self.data_pre_handle.max() - self.data_pre_handle.min())
+        norm_data = (self.plant_data - self.plant_data.min()) / \
+            (self.plant_data.max() - self.plant_data.min())
         self.ui.DataVisualWidget.setVisible(True)
         self.ui.DataVisualWidget.mpl.draw_heatmap(norm_data)
         print("正在数据可视化画图")
@@ -320,8 +326,8 @@ class MainWindow(QMainWindow):
 
     # 烟气含氧量软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
     def OxygenVisualPlot(self):
-        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
-            (self.data_pre_handle.max() - self.data_pre_handle.min())
+        #norm_data = (self.plant_data - self.plant_data.min()) / (self.plant_data.max() - self.plant_data.min())
+        norm_data = self.plant_data
         y = norm_data.含氧量
         X = norm_data.drop(['含氧量'], axis=1)
         train_X, test_X, train_y, test_y = train_test_split(
@@ -356,8 +362,8 @@ class MainWindow(QMainWindow):
 
     # 效率软测量下的槽函数：开始画图->OxygenVisualPlot()  self, title, xlabel, ylabel, x, predictions, real
     def EfficiencyVisualPlot(self):
-        norm_data = (self.data_pre_handle - self.data_pre_handle.min()) / \
-            (self.data_pre_handle.max() - self.data_pre_handle.min())
+        #norm_data = (self.plant_data - self.plant_data.min()) / (self.plant_data.max() - self.plant_data.min())
+        norm_data = self.plant_data
         y = norm_data.效率
         X = norm_data.drop(['效率'], axis=1)
         train_X, test_X, train_y, test_y = train_test_split(
@@ -395,7 +401,6 @@ class MainWindow(QMainWindow):
         print("正在进入槽函数")
         self.EfficiencyImprovethread.EfficiencyImprove(self.plant_data)
         self.EfficiencyImprovethread.start()
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -46,7 +46,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="DataMiningTab">
      <attribute name="title">
@@ -189,7 +189,17 @@
         </property>
         <item>
          <property name="text">
+          <string>sample</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>给煤量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>排烟温度</string>
          </property>
         </item>
         <item>
@@ -242,6 +252,11 @@
           <string>含氧量</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>效率</string>
+         </property>
+        </item>
        </widget>
       </widget>
       <widget class="QSplitter" name="ysplitter">
@@ -277,7 +292,17 @@
         </item>
         <item>
          <property name="text">
+          <string>效率</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>给煤量</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>排烟温度</string>
          </property>
         </item>
         <item>
