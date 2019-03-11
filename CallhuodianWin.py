@@ -189,7 +189,7 @@ class MainWindow(QMainWindow):
     # 数据预处理标签下的槽函数：导入数据->OpenFile()
     def OpenFile(self):
         self.filename = QFileDialog.getOpenFileName(
-            self, 'open file', '/home/oliverxu/桌面/github_projects/biyesheji/锅炉效率计算/包含效率数据/')
+            self, 'open file', '../')
         self.ui.DataMiningLabel.setText("正在导入，文件较大，请等待")
         self.logger.info("正在导入，文件较大，请等待")
         self.DataMiningthread.get_filename(self.filename)
