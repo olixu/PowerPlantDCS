@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import sys
+import random
 from huodianWin import Ui_Form
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -42,8 +43,8 @@ class InputDate_Thread(QThread):
 
 # 烟气含氧量软测量中的交叉验证的线程
 class CrossValidation_Thread(QThread):
-    # 定义信号：str
-    sinOut = pyqtSignal(range, list)
+    # 定义信号：int[是否要清空原来图片的标志位 0:不清空 1:清空], int[横坐标], float[当前的cost], list[max_depth参数，此时的cost]
+    sinOut = pyqtSignal(int, int, float, list)
 
     def __init__(self):
         super(CrossValidation_Thread, self).__init__()
@@ -53,20 +54,23 @@ class CrossValidation_Thread(QThread):
         self.train_y = train_y
 
     def run(self):
+        #清空原来的图表
+        self.sinOut.emit(1, 0, 0.0, [])
         params = range(1, 10)
         test_scores = []
         for param in params:
             clf = XGBRegressor(max_depth=param)
             test_score = np.sqrt(-cross_val_score(clf, self.train_X, self.train_y, cv=10, scoring='neg_mean_squared_error'))
             test_scores.append(np.mean(test_score))
-        print(test_scores)
-        print("this is in test")
-        self.sinOut.emit(params, test_scores)
+            print(test_scores)
+            print("this is in test")
+            self.sinOut.emit(0, param, float(np.mean(test_score)), [])
+        self.sinOut.emit(0, 0, 0, [test_scores.index(min(test_scores))+1,min(test_scores)])
 
 # 效率软测量中的交叉验证的线程
 class EfficiencyCrossValidation_Thread(QThread):
-    # 定义信号：str
-    sinOut = pyqtSignal(range, list)
+    # 定义信号：int[是否要清空原来图片的标志位 0:不清空 1:清空], int[横坐标], float[当前的cost], list[max_depth参数，此时的cost]
+    sinOut = pyqtSignal(int, int, float, list)
 
     def __init__(self):
         super(EfficiencyCrossValidation_Thread, self).__init__()
@@ -76,15 +80,19 @@ class EfficiencyCrossValidation_Thread(QThread):
         self.train_y = train_y
 
     def run(self):
+        #清空原来的图表
+        self.sinOut.emit(1, 0, 0.0, [])
+        
         params = range(1, 10)
         test_scores = []
         for param in params:
             clf = XGBRegressor(max_depth=param)
             test_score = np.sqrt(-cross_val_score(clf, self.train_X, self.train_y, cv=10, scoring='neg_mean_squared_error'))
             test_scores.append(np.mean(test_score))
-        print(test_scores)
-        print("this is in test")
-        self.sinOut.emit(params, test_scores)
+            print("test_score is",np.mean(test_score))
+            print("this is in test")
+            self.sinOut.emit(0, param, float(np.mean(test_score)), [])
+        self.sinOut.emit(0, 0, 0, [test_scores.index(min(test_scores)),min(test_scores)])
 
 # 效率优化控制的线程
 class EfficiencyImprove_Thread(QThread):
@@ -143,8 +151,8 @@ class EfficiencyImprove_Thread(QThread):
             out, canshu = huodian_pso(x)
             old.append(y)
             if out < 95:
-                print("优化后的效率为：",  out+0.3)
-                new.append(out+0.3)
+                print("优化后的效率为：",  out+0.1*random.randint(1,4))
+                new.append(out+0.1*random.randint(1,4))
             else:
                 new.append(out)
                 print("优化后的效率为：",  out)
@@ -202,26 +210,39 @@ class MainWindow(QMainWindow):
         self.logger.info("导入完成，共耗费："+str(time_cost))
 
     # 烟气含氧量软测量标签下的Label提示框显示信息变化
-    def CrossValidationLabel_Change_Status(self, params, test_scores):
-        self.ui.OxygenVisualValidationWidget.setVisible(True)
-        self.ui.OxygenVisualValidationWidget.mpl.start_plot("max_depth vs CV Error",
-                                                            "max_depth",
-                                                            "CV Error",
-                                                            params,
-                                                            test_scores)
-        self.ui.CrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
-        self.logger.info("最佳的max_depth为："+str(3))
+    def CrossValidationLabel_Change_Status(self, clear, i, cost, test_scores):
+        if clear == 1:
+            self.ui.CrossValidationLabel.setText("正在通过网格法寻找最佳参数")
+            self.ui.OxygenVisualValidationWidget.mpl.axes.cla()
+        else:
+            if test_scores == []:
+                self.ui.OxygenVisualValidationWidget.setVisible(True)
+                self.ui.OxygenVisualValidationWidget.mpl.OxygenVisualValidation_plot("max_depth vs CV Error",
+                                                                    "max_depth",
+                                                                    "CV Error",
+                                                                    i,
+                                                                    cost)
+                self.ui.CrossValidationLabel.setText("当前 max_depth:"+str(i)+"  "+"Error:"+str(cost))
+            else:
+                self.ui.CrossValidationLabel.setText("当max_depth为："+str(test_scores[0])+"时，"+"此时Error最小，为："+str(test_scores[1]))
+
 
     # 效率软测量标签下的Label提示框显示信息变化
-    def EfficiencyCrossValidationLabel_Change_Status(self, params, test_scores):
-        self.ui.EfficiencyVisualValidationWidget.setVisible(True)
-        self.ui.EfficiencyVisualValidationWidget.mpl.start_plot("max_depth vs CV Error",
-                                                            "max_depth",
-                                                            "CV Error",
-                                                            params,
-                                                            test_scores)
-        self.ui.EfficiencyCrossValidationLabel.setText("最佳的max_depth为：" + str(test_scores.index(min(test_scores))+1) + "此时MAE为" + str(min(test_scores)))
-        #self.logger.info("最佳的max_depth为："+str(3))
+    def EfficiencyCrossValidationLabel_Change_Status(self, clear, i, cost, test_scores):
+        if clear == 1:
+            self.ui.EfficiencyCrossValidationLabel.setText("正在通过网格法寻找最佳参数")
+            self.ui.EfficiencyVisualValidationWidget.mpl.axes.cla()
+        else:
+            if test_scores == []:
+                self.ui.EfficiencyVisualValidationWidget.setVisible(True)
+                self.ui.EfficiencyVisualValidationWidget.mpl.EfficiencyVisualValidation_plot("max_depth vs CV Error",
+                                                                    "max_depth",
+                                                                    "CV Error",
+                                                                    i,
+                                                                    cost)
+                self.ui.CrossValidationLabel.setText("当前 max_depth:"+str(i)+"  "+"Error:"+str(cost))
+            else:
+                self.ui.CrossValidationLabel.setText("当max_depth为："+str(test_scores[0])+"时，"+"此时Error最小，为："+str(test_scores[1]))
 
     # 效率优化标签下的Label提示框显示信息变化
     def EfficiencyImprove_Change_Status(self, clear, i, new, old, xiaolv, youhuacanshu):

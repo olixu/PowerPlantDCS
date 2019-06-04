@@ -63,9 +63,27 @@ class MyMplCanvas(FigureCanvas):
         plt.show()
         self.draw()
 
+    def OxygenVisualValidation_plot(self, title, xlabel, ylabel, x, cost):
+        self.fig.suptitle(title)
+        self.axes.set_xlim((-1, 10))
+        self.axes.scatter(x, cost, c='g')
+        self.axes.set_ylabel('Y轴:' + ylabel)
+        self.axes.set_xlabel('X轴:' + xlabel)
+        self.axes.grid(True)
+        self.draw()
+
+    def EfficiencyVisualValidation_plot(self, title, xlabel, ylabel, x, cost):
+        self.fig.suptitle(title)
+        self.axes.set_xlim((-1, 10))
+        self.axes.scatter(x, cost, c='g')
+        self.axes.set_ylabel('Y轴:' + ylabel)
+        self.axes.set_xlabel('X轴:' + xlabel)
+        self.axes.grid(True)
+        self.draw()
+
     def EfficiencyImprove_plot(self, title, xlabel, ylabel, x, new, old):
         self.fig.suptitle(title)
-        self.axes.set_ylim((94, 96))
+        self.axes.set_ylim((94.5, 95.5))
         self.axes.set_xlim((-1, 10))
         self.axes.scatter(x, old, c='g')
         self.axes.scatter(x, new, c='b')
