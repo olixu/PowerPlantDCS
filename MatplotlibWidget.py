@@ -40,7 +40,7 @@ class MyMplCanvas(FigureCanvas):
     def start_plot(self, title, xlabel, ylabel, x, y):
         self.axes.cla()
         self.fig.suptitle(title)
-        self.axes.scatter(x, y, linewidth=0.01)
+        self.axes.scatter(x, y, s=1)
         self.axes.set_ylabel('Y轴:' + ylabel)
         self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
@@ -49,8 +49,11 @@ class MyMplCanvas(FigureCanvas):
     def Oxygen_plot(self, title, xlabel, ylabel, x, predictions, real):
         self.axes.cla()
         self.fig.suptitle(title)
-        self.axes.plot(x, predictions, 'b-', label='预测值')
-        self.axes.plot(x, real, 'g-', label='实际值')
+        #self.axes.scatter(x, predictions, s=5, color='blue', label='预测值')
+        #self.axes.scatter(x, real, s=5, color='green', label='实际值')
+        #改为scatter以后，点显示的比较乱，因此，暂时先用plot
+        self.axes.plot(x, predictions, color='blue', label='预测值')
+        self.axes.plot(x, real, color='green', label='实际值')
         self.axes.set_ylabel('Y轴:' + ylabel)
         self.axes.set_xlabel('X轴:' + xlabel)
         self.axes.grid(True)
